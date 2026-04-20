@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Conversão de Moedas</title>
+</head>
+<body>
+
+    <h1>Conversor de Moedas</h1>
+
+    <input id="moedaOrigem" placeholder="Moeda origem (ex: USD)">
+    <input id="moedaDestino" placeholder="Moeda destino (ex: BRL)">
+    <input id="valor" placeholder="Valor (ex: 100)">
+
+    <button onclick="converter()">Converter</button>
+
+    <h2 id="resultado"></h2>
+
+    <script>
+        async function converter() {
+            const moedaOrigem = document.getElementById("moedaOrigem").value;
+            const moedaDestino = document.getElementById("moedaDestino").value;
+            const valor = document.getElementById("valor").value;
+
+            const response = await fetch(
+                `http://localhost:5019/api/conversao/converter?moedaOrigem=${moedaOrigem}&moedaDestino=${moedaDestino}&valor=${valor}`
+            );
+
+            const data = await response.json();
+
+            document.getElementById("resultado").innerText =
+                `Resultado: ${data.valorConvertido}`;
+        }
+    </script>
+
+</body>
+</html>
