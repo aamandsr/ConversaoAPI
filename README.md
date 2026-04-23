@@ -96,8 +96,7 @@ Permite testar a API diretamente pelo navegador.
 
 ## 📸 Demonstração
 
-<img width="1125" height="543" alt="image" src="https://github.com/user-attachments/assets/ddebce7a-18c3-4305-9273-775070052288" />
-
+<img width="952" height="631" alt="image" src="https://github.com/user-attachments/assets/553b6775-a739-48b5-a9b0-8ad2790c1ef2" />
 
 
 ## 📌 Status do projeto
