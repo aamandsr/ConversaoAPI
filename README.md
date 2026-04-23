@@ -108,9 +108,18 @@ Permite testar a API diretamente pelo navegador.
 
 
 
-## 💡 Próximas melhorias
-* Seletor de opções das moedas
-* Melhorar front-end
+## 💡 Melhorias
+* v2. 23/04/26
+	* Input de moeda com dropdown
+	* Formatação do resultado
+	* Front-end mais elaborado
+	* Tratamento de erros 404
+	* Fallback em caso de conversões diretas não aceitas
+
+
+	
+## 🛠️ Funcionalidades futuras
 * Implantar histórico da taxa de câmbio
+* Adicionar limitação nos campos de entrada
 
 ### 👩‍💻 Desenvolvido por Amanda Rodrigues

@@ -13,9 +13,11 @@ builder.Services.AddControllers();
 
 builder.Services.AddOpenApi();
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddHttpClient<IFrankfurterClient, FrankfurterClient>(client =>
 {
-    client.BaseAddress = new Uri("https://api.frankfurter.app/");
+    client.BaseAddress = new Uri("https://api.frankfurter.app");
 });
 
 builder.Services.AddScoped<IConversaoService, ConversaoService>();

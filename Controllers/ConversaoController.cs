@@ -21,8 +21,18 @@ namespace ConversaoAPI.Controllers
             [FromQuery] string moedaDestino, 
             [FromQuery] decimal valor)
         {
-            var resultado = await _service.Converter(moedaOrigem, moedaDestino, valor);
-            return Ok(resultado);
+            try
+            {
+                var resultado = await _service.Converter(moedaOrigem, moedaDestino, valor);
+                return Ok(resultado);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    mensagem = ex.Message
+                });
+            }
         }
     }
 }

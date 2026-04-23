@@ -2,35 +2,134 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/style.css">
     <title>Conversão de Moedas</title>
 </head>
 <body>
 
-    <h1>Conversor de Moedas</h1>
+    <div class="container">
+        <h1>💱 Conversor de Moedas</h1>
 
-    <input id="moedaOrigem" placeholder="Moeda origem (ex: USD)">
-    <input id="moedaDestino" placeholder="Moeda destino (ex: BRL)">
-    <input id="valor" placeholder="Valor (ex: 100)">
+        <div class="inputs">
+            <input id="moedaOrigem" list="listaMoedas" placeholder="Moeda origem">
+            <input id="moedaDestino" list="listaMoedas" placeholder="Moeda destino">
+            <input id="valor" placeholder="Valor">
+        </div>
 
-    <button onclick="converter()">Converter</button>
+        <button onclick="converter()">Converter</button>
 
-    <h2 id="resultado"></h2>
+        <h2 id="resultado"></h2>
+    </div>
+
+    <datalist id="listaMoedas"></datalist>
 
     <script>
-        async function converter() {
-            const moedaOrigem = document.getElementById("moedaOrigem").value;
-            const moedaDestino = document.getElementById("moedaDestino").value;
-            const valor = document.getElementById("valor").value;
+        // mapa de símbolos para as moedas mais comuns
+        const simbolos = {
+            USD: "US$",
+            BRL: "R$",
+            EUR: "€",
+            GBP: "£",
+            JPY: "¥",
+            CAD: "C$",
+            AUD: "A$",
+            CHF: "CHF",
+            CNY: "¥",
+            SEK: "kr",
+            NOK: "kr",
+            DKK: "kr",
+            PLN: "zł",
+            TRY: "₺",
+            INR: "₹",
+            KRW: "₩",
+            ZAR: "R"
+        };
 
-            const response = await fetch(
-                `http://localhost:5019/api/conversao/converter?moedaOrigem=${moedaOrigem}&moedaDestino=${moedaDestino}&valor=${valor}`
-            );
+        // mapa para armazenar os símbolos das moedas
+        let moedasMap = {};
 
-            const data = await response.json();
+        // carrega as moedas disponíveis na API e preenche o datalist
+        async function carregarMoedas() {
+            try {
+                // Buscamos diretamente a lista de nomes das moedas
+                const responseInfo = await fetch("http://localhost:5019/api/moedas");
 
-            document.getElementById("resultado").innerText =
-                `Resultado: ${data.valorConvertido}`;
+                if (!responseInfo.ok) throw new Error("Erro ao buscar moedas");
+
+                const moedas = await responseInfo.json();
+                const lista = document.getElementById("listaMoedas");
+
+                // Limpa a lista antes de preencher
+                lista.innerHTML = "";
+
+                // Percorre as moedas retornadas
+                for (let codigo in moedas) {
+                    let nome = moedas[codigo];
+                    const option = document.createElement("option");
+
+                    option.value = codigo;
+                    // exibe o código e o nome da moeda no formato "USD - Dólar Americano"
+                    option.textContent = codigo + " - " + nome;
+
+                    lista.appendChild(option);
+
+                    // guarda símbolo
+                    moedasMap[codigo] = simbolos[codigo] || codigo;
+                }
+            } catch (erro) {
+                console.error("Erro ao carregar lista:", erro);
+                // Preenchimento de emergência caso o CORS bloqueie a API
+                const emergencia = ["USD", "BRL", "EUR", "GBP", "JPY"];
+                emergencia.forEach(c => {
+                    const opt = document.createElement("option");
+                    opt.value = c;
+                    opt.textContent = c;
+                    document.getElementById("listaMoedas").appendChild(opt);
+                    moedasMap[c] = simbolos[c] || c;
+                });
+            }
         }
+
+        // realiza a conversão chamando a API
+        async function converter() {
+            const moedaOrigem = document.getElementById("moedaOrigem").value.toUpperCase();
+            const moedaDestino = document.getElementById("moedaDestino").value.toUpperCase();
+            const valorInput = document.getElementById("valor").value;
+            const valor = parseFloat(valorInput);
+
+            if (!moedaOrigem || !moedaDestino || isNaN(valor)) {
+                alert("Por favor, preencha todos os campos corretamente.");
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `http://localhost:5019/api/conversao/converter?moedaOrigem=${moedaOrigem}&moedaDestino=${moedaDestino}&valor=${valor}`
+                );
+
+                const data = await response.json();
+
+                // se deu erro na API
+                if (!response.ok) {
+                    document.getElementById("resultado").innerText = `Erro: ${data.mensagem}`;
+                    return;
+                }
+
+                const simboloOrigem = moedasMap[moedaOrigem] || moedaOrigem;
+                const simboloDestino = moedasMap[moedaDestino] || moedaDestino;
+
+                // exibe o resultado da conversão no formato "$ 100.00 = € 85.00"
+                document.getElementById("resultado").innerText =
+                    `${simboloOrigem} ${valor.toFixed(2)} = ${simboloDestino} ${data.valorConvertido.toFixed(2)}`;
+            }
+            catch (erro) {
+                // erro de rede / API offline
+                document.getElementById("resultado").innerText = "Erro ao conectar com a API local 😢";
+            }
+        }
+
+        // carrega as listas de moedas ao carregar a página
+        window.onload = carregarMoedas;
     </script>
 
 </body>
